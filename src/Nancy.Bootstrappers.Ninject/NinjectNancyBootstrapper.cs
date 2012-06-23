@@ -4,6 +4,7 @@
     using Nancy.Bootstrapper;
     using global::Ninject;
     using global::Ninject.Extensions.ChildKernel;
+    using System.Linq;
 
     /// <summary>
     /// Nancy bootstrapper for the Ninject container.
@@ -92,9 +93,9 @@
         /// </summary>
         /// <param name="container">Container to register into</param>
         /// <param name="moduleRegistrationTypes">NancyModule types</param>
-        protected override sealed void RegisterRequestContainerModules(IKernel container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
+        protected override void RegisterRequestContainerModules(IKernel container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
         {
-            foreach (var moduleRegistrationType in moduleRegistrationTypes)
+			foreach (var moduleRegistrationType in moduleRegistrationTypes.Where(x => !typeof(IDoNotResolveModule).IsAssignableFrom(x.ModuleType)))
             {
                 container.Bind(typeof (NancyModule)).To(moduleRegistrationType.ModuleType).InSingletonScope().Named(moduleRegistrationType.ModuleKey);
             }

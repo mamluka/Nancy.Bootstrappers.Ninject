@@ -17,7 +17,7 @@
         /// </summary>
         public override void Load()
         {
-            this.Kernel.Bind(typeof(Func<>)).ToMethod(CreateFunc).When(VerifyFactoryFunction);
+            Kernel.Bind(typeof(Func<>)).ToMethod(CreateFunc).When(VerifyFactoryFunction);
         }
 
         private static bool VerifyFactoryFunction(IRequest request)
@@ -52,16 +52,16 @@
 
         public class FunctionFactory<T>
         {
-            private readonly IKernel kernel;
+            private readonly IKernel _kernel;
 
             public FunctionFactory(IKernel kernel)
             {
-                this.kernel = kernel;
+                _kernel = kernel;
             }
 
             public Func<T> Create()
             {
-                return () => this.kernel.Get<T>();
+                return () => _kernel.Get<T>();
             }
         }
     }
