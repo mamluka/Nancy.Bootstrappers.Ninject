@@ -1,0 +1,2 @@
+[remote "upstream"]
+	url = git://github.com/NancyFx/Nancy.Bootstrappers.Ninject.git
