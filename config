@@ -1,2 +1,4 @@
 [remote "upstream"]
 	url = git://github.com/NancyFx/Nancy.Bootstrappers.Ninject.git
+[remote "origin"]
+	url = git@github.com:mamluka/Nancy.Bootstrappers.Ninject.git
