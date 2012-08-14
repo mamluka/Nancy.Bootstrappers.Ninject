@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8F429142-D707-4C24-AC2C-15F6CE423C31}</ProjectGuid>
+    <ProjectGuid>{91588744-6FF6-4CC0-A937-63AED5471D02}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nancy.Bootstrappers.Ninject.Tests</RootNamespace>
-    <AssemblyName>Nancy.Bootstrappers.Ninject.Tests</AssemblyName>
+    <RootNamespace>Nancy.Bootstrappers.Ninject.Mono</RootNamespace>
+    <AssemblyName>Nancy.Bootstrappers.Ninject.Mono</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,8 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.0.0.15\lib\net40\Ninject.dll</HintPath>
+    <Reference Include="Nancy">
+      <HintPath>..\packages\Nancy.0.11.0\lib\net40\Nancy.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Mono.3.0.1.10\lib\net40\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Extensions.ChildKernel, Version=2.1.0.13, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ninject.Mono.Extensions.ChildKernel.2.1.0.13\lib\net40\Ninject.Extensions.ChildKernel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -41,31 +48,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="xunit">
-      <HintPath>..\..\dependencies\Nancy\dependencies\xunit\xunit.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.extensions">
-      <HintPath>..\..\dependencies\Nancy\dependencies\xunit\xunit.extensions.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\dependencies\Nancy\src\Nancy.Tests\ShouldExtensions.cs">
-      <Link>ShouldExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\..\dependencies\Nancy\src\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="FakeNinjectNancyBootstrapper.cs" />
-    <Compile Include="NinjectNancyBootstrapperFixture.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Nancy.Bootstrappers.Ninject\Nancy.Bootstrappers.Ninject.csproj">
-      <Project>{760A88F1-7CEA-47FE-86AC-4F75609100F2}</Project>
-      <Name>Nancy.Bootstrappers.Ninject</Name>
-    </ProjectReference>
+    <Compile Include="FactoryModule.cs" />
+    <Compile Include="IDoNotResolveModule.cs" />
+    <Compile Include="NinjectNancyBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

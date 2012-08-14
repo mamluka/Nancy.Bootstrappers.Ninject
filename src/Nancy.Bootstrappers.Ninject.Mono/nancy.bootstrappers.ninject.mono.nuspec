@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>SpeedyMailer.Nancy.Bootstrappers.Ninject</id>
-	<title>Nancy bootstrapper for SpeedyMailer (Unofficial)</title>
+    <id>SpeedyMailer.Nancy.Bootstrappers.Ninject.Mono</id>
+	<title>Nancy Mono bootstrapper for SpeedyMailer (Unofficial)</title>
     <version>0.6.0</version> <!-- Overridden by rake nuget task but a default is required in nuspec files -->
     <authors>David Mazvovsky</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
