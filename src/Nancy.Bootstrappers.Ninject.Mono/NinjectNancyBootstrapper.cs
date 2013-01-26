@@ -1,147 +1,158 @@
-﻿namespace Nancy.Bootstrappers.Ninject
+﻿using System;
+
+namespace Nancy.Bootstrappers.Ninject
 {
-    using System.Collections.Generic;
-    using Nancy.Bootstrapper;
-    using global::Ninject;
-    using global::Ninject.Extensions.ChildKernel;
-    using System.Linq;
+	using System.Collections.Generic;
+	using Bootstrapper;
+	using global::Ninject;
+	using global::Ninject.Extensions.ChildKernel;
+	using System.Linq;
 
-    /// <summary>
-    /// Nancy bootstrapper for the Ninject container.
-    /// </summary>
-    public abstract class NinjectNancyBootstrapper : NancyBootstrapperWithRequestContainerBase<IKernel>
-    {
-        /// <summary>
-        /// Gets all registered startup tasks
-        /// </summary>
-        /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> instance containing <see cref="IStartup"/> instances. </returns>
-        protected override IEnumerable<IStartup> GetStartupTasks()
-        { 
-            return this.ApplicationContainer.GetAll<IStartup>();
-        }
+	/// <summary>
+	/// Nancy bootstrapper for the Ninject container.
+	/// </summary>
+	public abstract class NinjectNancyBootstrapper : NancyBootstrapperWithRequestContainerBase<IKernel>
+	{
+		/// <summary>
+		/// Gets all registered startup tasks
+		/// </summary>
+		/// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> instance containing <see cref="IStartup"/> instances. </returns>
+		protected override IEnumerable<IApplicationStartup> GetApplicationStartupTasks()
+		{
+			return this.ApplicationContainer.GetAll<IApplicationStartup>();
+		}
 
-        /// <summary>
-        /// Get INancyEngine
-        /// </summary>
-        /// <returns>INancyEngine implementation</returns>
-        protected override sealed INancyEngine GetEngineInternal()
-        {
-            return this.ApplicationContainer.Get<INancyEngine>();
-        }
+		/// <summary>
+		/// Gets all registered application registration tasks
+		/// </summary>
+		/// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> instance containing <see cref="IApplicationRegistrations"/> instances.</returns>
+		protected override IEnumerable<IApplicationRegistrations> GetApplicationRegistrationTasks()
+		{
+			return this.ApplicationContainer.GetAll<IApplicationRegistrations>();
+		}
 
-        /// <summary>
-        /// Get the moduleKey generator
-        /// </summary>
-        /// <returns>IModuleKeyGenerator instance</returns>
-        protected override sealed IModuleKeyGenerator GetModuleKeyGenerator()
-        {
-            return this.ApplicationContainer.Get<IModuleKeyGenerator>();
-        }
+		/// <summary>
+		/// Get INancyEngine
+		/// </summary>
+		/// <returns>INancyEngine implementation</returns>
+		protected override sealed INancyEngine GetEngineInternal()
+		{
+			return this.ApplicationContainer.Get<INancyEngine>();
+		}
 
-        /// <summary>
-        /// Create a default, unconfigured, container
-        /// </summary>
-        /// <returns>Container instance</returns>
-        protected override IKernel GetApplicationContainer()
-        {
-            return new StandardKernel(new[] { new FactoryModule() });
-        }
+		/// <summary>
+		/// Get the moduleKey generator
+		/// </summary>
+		/// <returns>IModuleKeyGenerator instance</returns>
+		protected override sealed IModuleKeyGenerator GetModuleKeyGenerator()
+		{
+			return this.ApplicationContainer.Get<IModuleKeyGenerator>();
+		}
 
-        /// <summary>
-        /// Bind the bootstrapper's implemented types into the container.
-        /// This is necessary so a user can pass in a populated container but not have
-        /// to take the responsibility of registering things like INancyModuleCatalog manually.
-        /// </summary>
-        /// <param name="applicationContainer">Application container to register into</param>
-        protected override sealed void RegisterBootstrapperTypes(IKernel applicationContainer)
-        {
-            applicationContainer.Bind<INancyModuleCatalog>().ToConstant(this);
-        }
+		/// <summary>
+		/// Create a default, unconfigured, container
+		/// </summary>
+		/// <returns>Container instance</returns>
+		protected override IKernel GetApplicationContainer()
+		{
+			return new StandardKernel(new[] { new FactoryModule() });
+		}
 
-        /// <summary>
-        /// Bind the default implementations of internally used types into the container as singletons
-        /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="typeRegistrations">Type registrations to register</param>
-        protected override sealed void RegisterTypes(IKernel container, IEnumerable<TypeRegistration> typeRegistrations)
-        {
-            foreach (var typeRegistration in typeRegistrations)
-            {
-                container.Bind(typeRegistration.RegistrationType).To(typeRegistration.ImplementationType).InSingletonScope();
-            }
-        }
+		/// <summary>
+		/// Bind the bootstrapper's implemented types into the container.
+		/// This is necessary so a user can pass in a populated container but not have
+		/// to take the responsibility of registering things like INancyModuleCatalog manually.
+		/// </summary>
+		/// <param name="applicationContainer">Application container to register into</param>
+		protected override sealed void RegisterBootstrapperTypes(IKernel applicationContainer)
+		{
+			applicationContainer.Bind<INancyModuleCatalog>().ToConstant(this);
+		}
 
-        /// <summary>
-        /// Bind the various collections into the container as singletons to later be resolved
-        /// by IEnumerable{Type} constructor dependencies.
-        /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
-        protected override sealed void RegisterCollectionTypes(IKernel container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
-        {
-            foreach (var collectionTypeRegistration in collectionTypeRegistrations)
-            {
-                foreach (var implementationType in collectionTypeRegistration.ImplementationTypes)
-                {
-                    container.Bind(collectionTypeRegistration.RegistrationType).To(implementationType).InSingletonScope();
-                }
-            }
-        }
+		/// <summary>
+		/// Bind the default implementations of internally used types into the container as singletons
+		/// </summary>
+		/// <param name="container">Container to register into</param>
+		/// <param name="typeRegistrations">Type registrations to register</param>
+		protected override sealed void RegisterTypes(IKernel container, IEnumerable<TypeRegistration> typeRegistrations)
+		{
+			foreach (var typeRegistration in typeRegistrations)
+			{
+				container.Bind(typeRegistration.RegistrationType).To(typeRegistration.ImplementationType).InSingletonScope();
+			}
+		}
 
-        /// <summary>
-        /// Bind the given module types into the container
-        /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="moduleRegistrationTypes">NancyModule types</param>
-        protected override void RegisterRequestContainerModules(IKernel container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
-        {
-            foreach (var moduleRegistrationType in moduleRegistrationTypes.Where(x => !typeof(IDoNotResolveModule).IsAssignableFrom(x.ModuleType)))
-            {
-                container.Bind(typeof (NancyModule)).To(moduleRegistrationType.ModuleType).InSingletonScope().Named(moduleRegistrationType.ModuleKey);
-            }
-        }
+		/// <summary>
+		/// Bind the various collections into the container as singletons to later be resolved
+		/// by IEnumerable{Type} constructor dependencies.
+		/// </summary>
+		/// <param name="container">Container to register into</param>
+		/// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
+		protected override sealed void RegisterCollectionTypes(IKernel container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
+		{
+			foreach (var collectionTypeRegistration in collectionTypeRegistrations)
+			{
+				foreach (var implementationType in collectionTypeRegistration.ImplementationTypes)
+				{
+					container.Bind(collectionTypeRegistration.RegistrationType).To(implementationType).InSingletonScope();
+				}
+			}
+		}
 
-        /// <summary>
-        /// Bind the given instances into the container
-        /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="instanceRegistrations">Instance registration types</param>
-        protected override void RegisterInstances(IKernel container, IEnumerable<InstanceRegistration> instanceRegistrations)
-        {
-            foreach (var instanceRegistration in instanceRegistrations)
-            {
-                container.Bind(instanceRegistration.RegistrationType).ToConstant(instanceRegistration.Implementation);
-            }
-        }
+		/// <summary>
+		/// Bind the given module types into the container
+		/// </summary>
+		/// <param name="container">Container to register into</param>
+		/// <param name="moduleRegistrationTypes">NancyModule types</param>
+		protected override void RegisterRequestContainerModules(IKernel container, IEnumerable<ModuleRegistration> moduleRegistrationTypes)
+		{
+			foreach (var moduleRegistrationType in moduleRegistrationTypes.Where(x => !typeof(IDoNotResolveModule).IsAssignableFrom(x.ModuleType)))
+			{
+				container.Bind(typeof(NancyModule)).To(moduleRegistrationType.ModuleType).InSingletonScope().Named(moduleRegistrationType.ModuleKey);
+			}
+		}
 
-        /// <summary>
-        /// Creates a per request child/nested container
-        /// </summary>
-        /// <returns>Request container instance</returns>
-        protected override sealed IKernel CreateRequestContainer()
-        {
-            return new ChildKernel(this.ApplicationContainer);
-        }
+		/// <summary>
+		/// Bind the given instances into the container
+		/// </summary>
+		/// <param name="container">Container to register into</param>
+		/// <param name="instanceRegistrations">Instance registration types</param>
+		protected override void RegisterInstances(IKernel container, IEnumerable<InstanceRegistration> instanceRegistrations)
+		{
+			foreach (var instanceRegistration in instanceRegistrations)
+			{
+				container.Bind(instanceRegistration.RegistrationType).ToConstant(instanceRegistration.Implementation);
+			}
+		}
 
-        /// <summary>
-        /// Retrieve all module instances from the container
-        /// </summary>
-        /// <param name="container">Container to use</param>
-        /// <returns>Collection of NancyModule instances</returns>
-        protected override sealed IEnumerable<NancyModule> GetAllModules(IKernel container)
-        {
-            return container.GetAll<NancyModule>();
-        }
+		/// <summary>
+		/// Creates a per request child/nested container
+		/// </summary>
+		/// <returns>Request container instance</returns>
+		protected override sealed IKernel CreateRequestContainer()
+		{
+			return new ChildKernel(this.ApplicationContainer);
+		}
 
-        /// <summary>
-        /// Retreive a specific module instance from the container by its key
-        /// </summary>
-        /// <param name="container">Container to use</param>
-        /// <param name="moduleKey">Module key of the module</param>
-        /// <returns>NancyModule instance</returns>
-        protected override sealed NancyModule GetModuleByKey(IKernel container, string moduleKey)
-        {
-            return container.Get<NancyModule>(moduleKey);
-        }
-    }
+		/// <summary>
+		/// Retrieve all module instances from the container
+		/// </summary>
+		/// <param name="container">Container to use</param>
+		/// <returns>Collection of NancyModule instances</returns>
+		protected override sealed IEnumerable<NancyModule> GetAllModules(IKernel container)
+		{
+			return container.GetAll<NancyModule>();
+		}
+
+		/// <summary>
+		/// Retreive a specific module instance from the container by its key
+		/// </summary>
+		/// <param name="container">Container to use</param>
+		/// <param name="moduleKey">Module key of the module</param>
+		/// <returns>NancyModule instance</returns>
+		protected override sealed NancyModule GetModuleByKey(IKernel container, string moduleKey)
+		{
+			return container.Get<NancyModule>(moduleKey);
+		}
+	}
 }
